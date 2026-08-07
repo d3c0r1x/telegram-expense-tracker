@@ -1,0 +1,9 @@
+[project]
+name = "telegram-expense-tracker"
+version = "1.0.0"
+description = "Учёт расходов в Telegram: /add, категории, отчёты, экспорт CSV"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,10 @@
+.env
+*.db
+*.db-shm
+*.db-wal
+*.log
+export_*.csv
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/

@@ -83,6 +83,21 @@ class Database:
             rows = await cur.fetchall()
         return [dict(r) for r in rows]
 
+    async def last_expense(self, user_id: int) -> dict | None:
+        """Последняя запись пользователя (для /undo)."""
+        rows = await self.recent(user_id, limit=1)
+        return rows[0] if rows else None
+
+    async def delete_expense(self, user_id: int, row_id: int) -> bool:
+        """Удаляет запись; True — если она существовала и удалена."""
+        async with aiosqlite.connect(self.path) as db:
+            cur = await db.execute(
+                "DELETE FROM expenses WHERE user_id = ? AND id = ?",
+                (user_id, row_id),
+            )
+            await db.commit()
+            return cur.rowcount > 0
+
     async def export_csv(self, path: str, user_id: int, start: date, end: date) -> int:
         """Выгружает расходы за период в CSV (utf-8-sig — открывается в Excel)."""
         async with aiosqlite.connect(self.path) as db:

@@ -103,3 +103,22 @@ def test_db_empty_results(tmp_path):
         assert await db.recent(1) == []
 
     asyncio.run(run())
+
+
+def test_undo_flow(tmp_path) -> None:
+    """/undo: удаляется последняя запись, предыдущая остаётся."""
+    db_path = str(tmp_path / "undo.db")
+
+    async def run():
+        db = Database(db_path)
+        await db.init()
+        assert await db.last_expense(1) is None
+        await db.add_expense(1, 100, "Продукты", "кофе")
+        await db.add_expense(1, 200, "Транспорт", "такси")
+        last = await db.last_expense(1)
+        assert last["amount"] == 200.0
+        assert await db.delete_expense(1, last["id"]) is True
+        assert (await db.last_expense(1))["amount"] == 100.0  # осталась первая
+        assert await db.delete_expense(1, last["id"]) is False  # повторное — False
+
+    asyncio.run(run())

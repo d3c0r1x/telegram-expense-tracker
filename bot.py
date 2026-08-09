@@ -8,6 +8,7 @@
   /today /week /month  — итого за период
   /report              — разбивка по категориям (кто съедает бюджет)
   /recent              — последние 10 записей
+  /undo                — отменить последнюю запись (при опечатке)
   /export              — CSV-файл расходов за месяц (открывается в Excel)
 
 Продвинутый уровень:
@@ -59,6 +60,7 @@ START_TEXT = (
     "/month — за месяц\n"
     "/report — по категориям\n"
     "/recent — последние записи\n"
+    "/undo — отменить последнюю запись\n"
     "/export — выгрузить месяц в CSV\n\n"
     "Формат расхода: сумма + примечание (категория определится сама)."
 )
@@ -147,6 +149,22 @@ async def cmd_recent(message: Message) -> None:
         for r in rows
     ]
     await message.answer("\n".join(lines))
+
+
+@router.message(Command("undo"))
+async def cmd_undo(message: Message) -> None:
+    """Отменяет последнюю запись — спасает при опечатке в сумме."""
+    last = await db.last_expense(message.from_user.id)
+    if last is None:
+        await message.answer("Удалять нечего: записей пока нет.")
+        return
+    if not await db.delete_expense(message.from_user.id, last["id"]):
+        await message.answer("Не удалось удалить запись (возможно, уже удалена).")
+        return
+    await message.answer(
+        f"↩️ Удалена последняя запись: <b>{_money(last['amount'])}</b> "
+        f"({_html.escape(last['category'])}) {_html.escape(last['note'] or '')}"
+    )
 
 
 @router.message(Command("export"))

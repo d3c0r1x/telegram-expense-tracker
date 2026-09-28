@@ -18,7 +18,7 @@
   - экспорт CSV в кодировке utf-8-sig (совместим с Excel);
   - middlewares: троттлинг и логирование.
 
-Запуск:  python bot.py   (задайте EXPENSE_BOT_TOKEN, или run_bot8.cmd).
+Запуск:  python bot.py   (задайте EXPENSE_BOT_TOKEN, или start.bat).
 """
 from __future__ import annotations
 

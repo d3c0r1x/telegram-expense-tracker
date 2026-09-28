@@ -41,7 +41,7 @@ export EXPENSE_BOT_TOKEN=123456:ABC...   # токен от @BotFather
 python bot.py
 ```
 
-На Windows — `run_bot8.cmd` (токен из корневого `.env`). База по умолчанию — `expenses.db` рядом с ботом; путь переопределяется через `EXPENSE_DB_PATH`.
+На Windows — `start.bat` (токен из корневого `.env`). База по умолчанию — `expenses.db` рядом с ботом; путь переопределяется через `EXPENSE_DB_PATH`.
 
 ## Структура проекта
 

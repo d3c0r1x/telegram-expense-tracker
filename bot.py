@@ -35,6 +35,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import FSInputFile, Message
 
 import config
+from aiogram import F
 from categories import parse_expense
 from db import Database
 from middlewares import LoggingMiddleware, ThrottlingMiddleware
@@ -62,7 +63,8 @@ START_TEXT = (
     "/recent — последние записи\n"
     "/undo — отменить последнюю запись\n"
     "/export — выгрузить месяц в CSV\n\n"
-    "Формат расхода: сумма + примечание (категория определится сама)."
+    "Формат расхода: сумма + примечание (категория определится сама).\n"
+    "Можно и без /add: просто напишите «500 кофе»."
 )
 
 
@@ -103,6 +105,22 @@ async def cmd_add(message: Message) -> None:
     await message.answer(
         f"✅ Записано: <b>{_money(amount)}</b> — {_html.escape(note or category)}\n"
         f"🏷 Категория: <b>{_html.escape(category)}</b> (№{row_id})"
+    )
+
+
+@router.message(F.text.regexp(r"^\d+([.,]\d+)?\s+.+"))
+async def plain_expense(message: Message) -> None:
+    """«500 кофе» без команды — всё равно записывается (FALLBACK-обработчик)."""
+    parsed = parse_expense(message.text or "", max_amount=config.MAX_AMOUNT)
+    if parsed is None:
+        await message.answer("⚠️ Формат: сумма и примечание, например: 500 кофе")
+        return
+    amount, note, category = parsed
+    row_id = await db.add_expense(message.from_user.id, amount, category, note)
+    await message.answer(
+        f"✅ Записано: <b>{_money(amount)}</b> — {_html.escape(note or category)}\n"
+        f"🏷 Категория: <b>{_html.escape(category)}</b> (№{row_id})\n"
+        "💡 Не обязательно писать /add — просто отправьте «500 кофе»."
     )
 
 

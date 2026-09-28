@@ -1,5 +1,7 @@
 # Telegram Expense Tracker
 
+[![CI](https://github.com/d3c0r1x/telegram-expense-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/d3c0r1x/telegram-expense-tracker/actions/workflows/ci.yml)
+
 Личный трекер расходов. Расход записывается одной строкой в чат; бот автоматически распределяет его по категориям, рассчитывает итоги и формирует отчёты. Данные хранятся в локальной базе данных SQLite рядом с ботом.
 
 ## Команды
